@@ -1,51 +1,28 @@
+-- NÃO USE ESTA LINHA AQUI: \c fotosdb
 
---DATA BASE NAME: dbprimefaces
-
-CREATE TABLE pessoa
-(
-  	id serial NOT NULL,
-  	nome text NOT NULL,
-  	datanascimento Date NOT NULL,
-	idade integer NOT NULL,
-  	email text NOT NULL, 	
-  	senha text NOT NULL,  
-	fumante boolean,
-	cidadania text,
-  	observacao text,
-  constraint pk_tbl_pessoa primary key (id)
-);
-
--- Tabela: Fotografo
 CREATE TABLE fotografo (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    nome VARCHAR(100) NOT NULL,
-    email VARCHAR(100) NOT NULL UNIQUE,
-    senha VARCHAR(255) NOT NULL
+    id SERIAL PRIMARY KEY,
+    nome VARCHAR(150) NOT NULL,
+    email VARCHAR(150) NOT NULL UNIQUE,
+    senha VARCHAR(64) NOT NULL
 );
 
--- Tabela: Genero
 CREATE TABLE genero (
-    id INT AUTO_INCREMENT PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     descricao VARCHAR(100) NOT NULL
 );
 
--- Tabela: Local
 CREATE TABLE local (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    nome VARCHAR(100) NOT NULL
+    id SERIAL PRIMARY KEY,
+    nome VARCHAR(150) NOT NULL
 );
 
--- Tabela: Foto
 CREATE TABLE foto (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    titulo VARCHAR(100) NOT NULL,
-    descricao TEXT,
+    id SERIAL PRIMARY KEY,
+    titulo VARCHAR(150) NOT NULL,
+    descricao VARCHAR(500),
     arquivo VARCHAR(255) NOT NULL,
-    fotografo_id INT NOT NULL,
-    genero_id INT NOT NULL,
-    local_id INT NOT NULL,
-    FOREIGN KEY (fotografo_id) REFERENCES fotografo(id) ON DELETE CASCADE,
-    FOREIGN KEY (genero_id) REFERENCES genero(id),
-    FOREIGN KEY (local_id) REFERENCES local(id)
+    fotografo_id INTEGER NOT NULL REFERENCES fotografo(id),
+    genero_id INTEGER NOT NULL REFERENCES genero(id),
+    local_id INTEGER NOT NULL REFERENCES local(id)
 );
-
