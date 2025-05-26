@@ -40,7 +40,7 @@ public class PessoaFacade {
             query.setParameter("email", email);
             return query.getSingleResult();
         } catch (Exception e) {
-            return null; // Não encontrou
+            return null;
         }
     }
 }
