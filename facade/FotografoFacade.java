@@ -1,34 +1,34 @@
-package br.upf.projetojfprimefaces.facade;
+package br.upf.projetofotografia.facade;
 
-import br.upf.projetojfprimefaces.entity.FotografoEntity;
+import br.upf.projetofotografia.entity.FotoEntity;
 import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import java.util.List;
 
 @Stateless
-public class FotografoFacade extends AbstractFacade<FotografoEntity> {
+public class FotoFacade {
 
-    @PersistenceContext(unitName = "SeuPU") // substitua "SeuPU" pelo nome correto da sua persistence unit
+    @PersistenceContext(unitName = "ProjetofotografiaPU")
     private EntityManager em;
 
-    @Override
-    protected EntityManager getEntityManager() {
-        return em;
+    public void create(FotoEntity entity) {
+        em.persist(entity);
     }
 
-    public FotografoFacade() {
-        super(FotografoEntity.class);
+    public void edit(FotoEntity entity) {
+        em.merge(entity);
     }
 
-    public FotografoEntity findByEmailAndSenha(String email, String senha) {
-        try {
-            return em.createQuery(
-                "SELECT f FROM FotografoEntity f WHERE f.email = :email AND f.senha = :senha", FotografoEntity.class)
-                .setParameter("email", email)
-                .setParameter("senha", senha)
-                .getSingleResult();
-        } catch (Exception e) {
-            return null;
-        }
+    public void remove(FotoEntity entity) {
+        em.remove(em.merge(entity));
+    }
+
+    public FotoEntity find(Object id) {
+        return em.find(FotoEntity.class, id);
+    }
+
+    public List<FotoEntity> findAll() {
+        return em.createQuery("SELECT f FROM FotoEntity f", FotoEntity.class).getResultList();
     }
 }
