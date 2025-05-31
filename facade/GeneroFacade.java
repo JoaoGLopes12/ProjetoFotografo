@@ -1,22 +1,34 @@
-package br.upf.projetojfprimefaces.facade;
+package br.upf.projetofotografia.facade;
 
-import br.upf.projetojfprimefaces.entity.GeneroEntity;
+import br.upf.projetofotografia.entity.GeneroEntity;
 import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import java.util.List;
 
 @Stateless
-public class GeneroFacade extends AbstractFacade<GeneroEntity> {
+public class GeneroFacade {
 
-    @PersistenceContext(unitName = "SeuPU")
+    @PersistenceContext(unitName = "ProjetofotografiaPU")
     private EntityManager em;
 
-    public GeneroFacade() {
-        super(GeneroEntity.class);
+    public void create(GeneroEntity entity) {
+        em.persist(entity);
     }
 
-    @Override
-    protected EntityManager getEntityManager() {
-        return em;
+    public void edit(GeneroEntity entity) {
+        em.merge(entity);
+    }
+
+    public void remove(GeneroEntity entity) {
+        em.remove(em.merge(entity));
+    }
+
+    public GeneroEntity find(Object id) {
+        return em.find(GeneroEntity.class, id);
+    }
+
+    public List<GeneroEntity> findAll() {
+        return em.createQuery("SELECT g FROM GeneroEntity g", GeneroEntity.class).getResultList();
     }
 }
