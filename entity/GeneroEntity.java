@@ -13,7 +13,6 @@ public class GeneroEntity implements Serializable {
 
     private String descricao;
 
-    // Getters e Setters
     public Integer getId() { return id; }
     public void setId(Integer id) { this.id = id; }
 
