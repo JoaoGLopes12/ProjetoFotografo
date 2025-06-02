@@ -1,0 +1,58 @@
+package br.upf.projetofotografia.controller;
+
+import br.upf.projetofotografia.entity.GeneroEntity;
+import br.upf.projetofotografia.facade.GeneroFacade;
+import jakarta.annotation.PostConstruct;
+import jakarta.ejb.EJB;
+import jakarta.faces.view.ViewScoped;
+import jakarta.inject.Named;
+import java.io.Serializable;
+import java.util.List;
+
+@Named
+@ViewScoped
+public class GeneroController implements Serializable {
+
+    @EJB
+    private GeneroFacade facade;
+
+    private GeneroEntity entity;
+    private GeneroEntity selected;
+    private List<GeneroEntity> list;
+
+    @PostConstruct
+    public void init() {
+        entity = new GeneroEntity();
+        list = facade.findAll();
+    }
+
+    public void salvar() {
+        if (entity.getId() == null) {
+            facade.create(entity);
+        } else {
+            facade.edit(entity);
+        }
+        entity = new GeneroEntity();
+        list = facade.findAll();
+    }
+
+    public void excluir() {
+        if (selected != null) {
+            facade.remove(selected);
+            list = facade.findAll();
+            selected = null;
+        }
+    }
+
+    public void novo() {
+        entity = new GeneroEntity();
+    }
+
+    public GeneroEntity getEntity() { return entity; }
+    public void setEntity(GeneroEntity entity) { this.entity = entity; }
+
+    public GeneroEntity getSelected() { return selected; }
+    public void setSelected(GeneroEntity selected) { this.selected = selected; }
+
+    public List<GeneroEntity> getList() { return list; }
+}
