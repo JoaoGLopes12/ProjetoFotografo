@@ -19,7 +19,6 @@ public class FotografoEntity implements Serializable {
     @Column(nullable = false)
     private String senha;
 
-    // Getters e Setters
     public Integer getId() { return id; }
     public void setId(Integer id) { this.id = id; }
 
