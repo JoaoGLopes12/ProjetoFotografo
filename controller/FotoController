@@ -1,0 +1,84 @@
+package br.upf.projetofotografia.controller;
+
+import br.upf.projetofotografia.entity.FotoEntity;
+import br.upf.projetofotografia.entity.GeneroEntity;
+import br.upf.projetofotografia.entity.LocalEntity;
+import br.upf.projetofotografia.entity.FotografoEntity;
+import br.upf.projetofotografia.facade.FotoFacade;
+import br.upf.projetofotografia.facade.GeneroFacade;
+import br.upf.projetofotografia.facade.LocalFacade;
+import br.upf.projetofotografia.facade.FotografoFacade;
+import jakarta.annotation.PostConstruct;
+import jakarta.ejb.EJB;
+import jakarta.faces.view.ViewScoped;
+import jakarta.inject.Named;
+import java.io.Serializable;
+import java.util.List;
+
+@Named
+@ViewScoped
+public class FotoController implements Serializable {
+
+    @EJB
+    private FotoFacade fotoFacade;
+
+    @EJB
+    private GeneroFacade generoFacade;
+
+    @EJB
+    private LocalFacade localFacade;
+
+    @EJB
+    private FotografoFacade fotografoFacade;
+
+    private FotoEntity entity;
+    private FotoEntity selected;
+    private List<FotoEntity> list;
+
+    private List<GeneroEntity> generos;
+    private List<LocalEntity> locais;
+    private List<FotografoEntity> fotografos;
+
+    @PostConstruct
+    public void init() {
+        entity = new FotoEntity();
+        list = fotoFacade.findAll();
+        generos = generoFacade.findAll();
+        locais = localFacade.findAll();
+        fotografos = fotografoFacade.findAll();
+    }
+
+    public void salvar() {
+        if (entity.getId() == null) {
+            fotoFacade.create(entity);
+        } else {
+            fotoFacade.edit(entity);
+        }
+        entity = new FotoEntity();
+        list = fotoFacade.findAll();
+    }
+
+    public void excluir() {
+        if (selected != null) {
+            fotoFacade.remove(selected);
+            list = fotoFacade.findAll();
+            selected = null;
+        }
+    }
+
+    public void novo() {
+        entity = new FotoEntity();
+    }
+
+    public FotoEntity getEntity() { return entity; }
+    public void setEntity(FotoEntity entity) { this.entity = entity; }
+
+    public FotoEntity getSelected() { return selected; }
+    public void setSelected(FotoEntity selected) { this.selected = selected; }
+
+    public List<FotoEntity> getList() { return list; }
+
+    public List<GeneroEntity> getGeneros() { return generos; }
+    public List<LocalEntity> getLocais() { return locais; }
+    public List<FotografoEntity> getFotografos() { return fotografos; }
+}
