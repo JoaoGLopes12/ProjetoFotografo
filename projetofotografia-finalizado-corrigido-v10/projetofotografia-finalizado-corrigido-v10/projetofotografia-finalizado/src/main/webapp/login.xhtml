@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+
+    <h:head>
+        <f:facet name="first">
+            <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+            <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+            <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+            <meta name="apple-mobile-web-app-capable" content="yes" />
+        </f:facet>
+        <title>PrimeFaces - Manhattan</title>
+        <h:outputStylesheet name="css/primeicons.css" library="manhattan-layout"/>
+        <h:outputStylesheet name="css/primeflex.min.css" library="manhattan-layout"/>
+        <h:outputStylesheet name="css/layout-cyan-deeporange.css" library="manhattan-layout" />
+    </h:head>
+
+    <h:body styleClass="login-body">
+        <!-- Formulário de Login -->
+        <h:form id="CreateForm">
+            <p:growl id="growl" showDetail="true" />
+            <div class="grid grid-nogutter">
+                <div class="col-12" style="text-align:center">
+                    <p:graphicImage name="images/logo-manhattan.png" library="manhattan-layout" class="logo" />
+                </div>
+            </div>
+            
+            <div class="login-panel">
+                <div class="grid">
+                    <div class="col-12 lg:col-6 left-side">
+                        <p:graphicImage name="images/login/login-photo.png" library="manhattan-layout" class="login-image" />
+                    </div>
+                    <div class="col-12 lg:col-6 right-side ui-fluid">
+                        <div class="col-12 container">
+                            <h3>Welcome guest!</h3>
+                            <h2>Sign in to Manhattan Network</h2>
+                        </div>
+                        <div class="col-12">
+                            <div class="input-wrapper ui-input-icon-left">
+                                <i class="pi pi-user"/>
+                                <p:inputText id="email" value="#{loginController.fotografo.email}" 
+                                             autocomplete="off" 
+                                             required="true" requiredMessage="O Email é obrigatório!" 
+                                             placeholder="E-mail"/>                        
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="input-wrapper ui-input-icon-left">
+                                <i class="pi pi-lock"/>                                 
+                                <p:password id="senha" value="#{loginController.fotografo.senha}" 
+                                             autocomplete="off" 
+                                             required="true" requiredMessage="A senha é obrigatória!" 
+                                             placeholder="Senha"/>
+                            </div>
+                        </div>
+                        <div class="col-12 button-container">                             
+                            <!-- Colocando o botão dentro do h:form -->
+                            <p:commandButton id="btnLogar" value="Acessar" update="@form" 
+                                             action="#{loginController.validarLogin}" />
+                        </div>
+                    </div>
+                </div>
+            </div>           
+        </h:form>
+    </h:body>
+</html>

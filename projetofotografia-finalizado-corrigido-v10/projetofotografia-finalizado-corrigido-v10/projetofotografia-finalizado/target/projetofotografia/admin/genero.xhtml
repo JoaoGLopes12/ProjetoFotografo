@@ -1,0 +1,33 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui"
+    template="/WEB-INF/template.xhtml">
+
+<ui:define name="content">
+    <h:form id="formGenero">
+        <p:panel header="Gerenciar Gêneros">
+            <p:dataTable value="#{generoController.generos}" var="g" selection="#{generoController.selected}" selectionMode="single" rowKey="#{g.id}">
+                <p:column headerText="Descrição">
+                    <h:outputText value="#{g.descricao}" />
+                </p:column>
+            </p:dataTable>
+
+            <p:commandButton value="Novo" actionListener="#{generoController.novo}" update=":formDialog" oncomplete="PF('dialogGenero').show()" />
+            <p:commandButton value="Editar" actionListener="#{generoController.setEntity(generoController.selected)}" update=":formDialog" oncomplete="PF('dialogGenero').show()" disabled="#{empty generoController.selected}" />
+            <p:commandButton value="Excluir" action="#{generoController.excluir}" update=":formGenero" disabled="#{empty generoController.selected}" />
+        </p:panel>
+    </h:form>
+
+    <p:dialog header="Cadastro de Gênero" widgetVar="dialogGenero" modal="true" resizable="false">
+        <h:form id="formDialog">
+            <p:panelGrid columns="2">
+                <p:outputLabel for="descricao" value="Descrição:" />
+                <p:inputText id="descricao" value="#{generoController.entity.descricao}" required="true"/>
+            </p:panelGrid>
+            <p:commandButton value="Salvar" action="#{generoController.salvar}" update=":formGenero" oncomplete="PF('dialogGenero').hide()" />
+        </h:form>
+    </p:dialog>
+</ui:define>
+</ui:composition>

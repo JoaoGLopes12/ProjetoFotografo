@@ -1,0 +1,33 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui"
+    template="/WEB-INF/template.xhtml">
+
+<ui:define name="content">
+    <h:form id="formLocal">
+        <p:panel header="Gerenciar Locais">
+            <p:dataTable value="#{localController.list}" var="l" selection="#{localController.selected}" selectionMode="single" rowKey="#{l.id}">
+                <p:column headerText="Nome">
+                    #{l.nome}
+                </p:column>
+            </p:dataTable>
+
+            <p:commandButton value="Novo" actionListener="#{localController.novo}" update=":formDialog" oncomplete="PF('dialogLocal').show()" />
+            <p:commandButton value="Editar" actionListener="#{localController.setEntity(localController.selected)}" update=":formDialog" oncomplete="PF('dialogLocal').show()" disabled="#{empty localController.selected}" />
+            <p:commandButton value="Excluir" action="#{localController.excluir}" update="@form" disabled="#{empty localController.selected}" />
+        </p:panel>
+    </h:form>
+
+    <p:dialog header="Cadastro de Local" widgetVar="dialogLocal" modal="true" resizable="false">
+        <h:form id="formDialog">
+            <p:panelGrid columns="2">
+                <p:outputLabel for="nome" value="Nome:" />
+                <p:inputText id="nome" value="#{localController.entity.nome}" required="true"/>
+            </p:panelGrid>
+            <p:commandButton value="Salvar" action="#{localController.salvar}" update=":formLocal" oncomplete="PF('dialogLocal').hide()" />
+        </h:form>
+    </p:dialog>
+</ui:define>
+</ui:composition>

@@ -1,0 +1,128 @@
+<ui:composition template="/WEB-INF/template.xhtml"
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui">
+
+    <ui:define name="title">
+        Cadastro de Fotos
+    </ui:define>
+
+    <ui:define name="content">
+        <!-- Formulário para o CRUD -->
+        <h:form id="formFoto" enctype="multipart/form-data">
+
+            <p:messages id="messages" autoUpdate="true" closable="true" />
+
+            <p:panel header="Lista de Fotos">
+
+                <!-- Botão Nova Foto -->
+                <p:commandButton value="Nova Foto"
+                                 icon="pi pi-plus"
+                                 actionListener="#{fotoController.novo}"
+                                 oncomplete="PF('dialogFoto').show()"
+                                 update=":formFoto:dialogFoto"
+                                 styleClass="mb-3" />
+
+                <p:dataTable value="#{fotoController.list}" var="foto" id="tabelaFotos"
+                             editable="false" paginator="true" rows="10">
+
+                    <p:column headerText="ID">
+                        <h:outputText value="#{foto.id}" />
+                    </p:column>
+
+                    <p:column headerText="Título">
+                        <h:outputText value="#{foto.titulo}" />
+                    </p:column>
+
+                    <p:column headerText="Descrição">
+                        <h:outputText value="#{foto.descricao}" />
+                    </p:column>
+
+                    <p:column headerText="Arquivo">
+                        <h:outputText value="#{foto.arquivo}" />
+                    </p:column>
+
+                    <p:column headerText="Gênero">
+                        <h:outputText value="#{foto.genero.nome}" />
+                    </p:column>
+
+                    <p:column headerText="Local">
+                        <h:outputText value="#{foto.local.nome}" />
+                    </p:column>
+
+                    <p:column headerText="Fotógrafo">
+                        <h:outputText value="#{foto.fotografo.nome}" />
+                    </p:column>
+
+                    <p:column headerText="Ações">
+                        <p:commandButton value="Editar"
+                                         icon="pi pi-pencil"
+                                         actionListener="#{fotoController.editar(foto)}"
+                                         oncomplete="PF('dialogFoto').show()"
+                                         update=":formFoto:dialogFoto" />
+                        <p:commandButton value="Excluir"
+                                         icon="pi pi-trash"
+                                         actionListener="#{fotoController.excluir}"
+                                         update=":formFoto:tabelaFotos :formFoto:messages"
+                                         process="@this">
+                            <f:setPropertyActionListener target="#{fotoController.selected}" value="#{foto}" />
+                        </p:commandButton>
+                    </p:column>
+
+                </p:dataTable>
+            </p:panel>
+
+            <!-- Dialog para cadastro/edição -->
+            <p:dialog id="dialogFoto" widgetVar="dialogFoto" header="Nova Foto"
+                      modal="true" appendTo="formFoto" width="600" height="600">
+
+                <h:panelGrid columns="2" cellpadding="5">
+
+                    <h:outputLabel value="Título:" for="titulo" />
+                    <p:inputText id="titulo" value="#{fotoController.entity.titulo}" required="true" />
+
+                    <h:outputLabel value="Descrição:" for="descricao" />
+                    <p:inputTextarea id="descricao" value="#{fotoController.entity.descricao}" required="true" />
+
+                    <h:outputLabel value="Arquivo:" for="arquivo" />
+                    <p:fileUpload id="arquivo" mode="simple"
+                                  fileUploadListener="#{fotoController.handleFileUpload}"
+                                  update="messages" />
+
+                    <h:outputLabel value="Gênero:" for="genero" />
+                    <p:selectOneMenu id="genero" value="#{fotoController.generoId}">
+                        <f:selectItems value="#{fotoController.generos}" var="g"
+                                       itemValue="#{g.id}" itemLabel="#{g.nome}" />
+                    </p:selectOneMenu>
+
+                    <h:outputLabel value="Local:" for="local" />
+                    <p:selectOneMenu id="local" value="#{fotoController.localId}">
+                        <f:selectItems value="#{fotoController.locais}" var="l"
+                                       itemValue="#{l.id}" itemLabel="#{l.nome}" />
+                    </p:selectOneMenu>
+
+                    <h:outputLabel value="Fotógrafo:" for="fotografo" />
+                    <p:selectOneMenu id="fotografo" value="#{fotoController.fotografoId}">
+                        <f:selectItems value="#{fotoController.fotografos}" var="f"
+                                       itemValue="#{f.id}" itemLabel="#{f.nome}" />
+                    </p:selectOneMenu>
+
+                </h:panelGrid>
+
+                <f:facet name="footer">
+                    <p:commandButton value="Salvar"
+                                     icon="pi pi-save"
+                                     action="#{fotoController.salvar}"
+                                     process="@form"
+                                     update=":formFoto:messages :formFoto:tabelaFotos"
+                                     oncomplete="PF('dialogFoto').hide()" />
+                </f:facet>
+
+            </p:dialog>
+
+        </h:form>
+    </ui:define>
+
+</ui:composition>

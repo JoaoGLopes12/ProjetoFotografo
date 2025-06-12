@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+    <title><ui:insert name="title">Título Padrão</ui:insert></title>
+    <h:outputStylesheet library="primefaces-manhattan" name="theme.css"/>
+</h:head>
+
+<h:body>
+    <div id="top">
+        <ui:insert name="top" />
+    </div>
+
+    <div id="menu" style="float:left; width:20%;">
+        <ui:insert name="menu" />
+    </div>
+
+    <div id="content" style="margin-left:22%;">
+        <ui:insert name="content" />
+    </div>
+
+    <div id="footer" style="clear:both;">
+        <ui:insert name="footer" />
+    </div>
+</h:body>
+
+</html>

@@ -1,0 +1,17 @@
+<ui:component xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui">
+
+    <h3 style="margin-left:10px;">Sistema de Gerenciamento de Fotos</h3>
+    <p:menu style="width:100%;">
+        <p:menuitem value="Fotos" outcome="/admin/foto.xhtml" icon="pi pi-image" />
+        <p:menuitem value="Gêneros" outcome="/admin/genero.xhtml" icon="pi pi-tags" />
+        <p:menuitem value="Locais" outcome="/admin/local.xhtml" icon="pi pi-map-marker" />
+
+        <!-- Novas opções de menu -->
+        <p:menuitem value="Usuários" outcome="/admin/usuarios.xhtml" icon="pi pi-users" />
+        <p:menuitem value="Configurações" outcome="/admin/configuracoes.xhtml" icon="pi pi-cog" />
+        <p:menuitem value="Relatórios" outcome="/admin/relatorios.xhtml" icon="pi pi-chart-line" />
+    </p:menu>
+</ui:component>
