@@ -1,0 +1,105 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui"
+    template="/WEB-INF/template.xhtml">
+
+<ui:define name="content">
+    <h:form id="formLocal">
+        <p:messages id="messages" showDetail="true" autoUpdate="true" closable="true" />
+        
+        <p:panel header="Gerenciar Locais">
+            <p:dataTable value="#{localController.locais}" var="l" 
+                         selection="#{localController.selected}" 
+                         selectionMode="single" 
+                         rowKey="#{l.id}"
+                         id="tabelaLocais">
+                <f:facet name="header">
+                    Lista de Locais
+                </f:facet>
+                
+                <p:column headerText="ID" width="80">
+                    <h:outputText value="#{l.id}" />
+                </p:column>
+                
+                <p:column headerText="Nome">
+                    <h:outputText value="#{l.nome}" />
+                </p:column>
+                
+                <p:ajax event="rowSelect" update="@form:btnEditar @form:btnExcluir" />
+                <p:ajax event="rowUnselect" update="@form:btnEditar @form:btnExcluir" />
+            </p:dataTable>
+
+            <p:toolbar style="margin-top: 10px;">
+                <p:toolbarGroup align="left">
+                    <p:commandButton value="Novo" 
+                                   icon="pi pi-plus"
+                                   actionListener="#{localController.novo}" 
+                                   update=":formDialog" 
+                                   oncomplete="PF('dialogLocal').show()" />
+                    
+                    <p:commandButton id="btnEditar"
+                                   value="Editar" 
+                                   icon="pi pi-pencil"
+                                   actionListener="#{localController.prepararEdicao}" 
+                                   update=":formDialog" 
+                                   oncomplete="if (#{not empty localController.selected}) PF('dialogLocal').show()" 
+                                   disabled="#{empty localController.selected}" />
+                    
+                    <p:commandButton id="btnExcluir"
+                                   value="Excluir" 
+                                   icon="pi pi-trash"
+                                   actionListener="#{localController.excluir}" 
+                                   update="@form messages" 
+                                   disabled="#{empty localController.selected}">
+                        <p:confirm header="Confirmação" 
+                                  message="Tem certeza que deseja excluir o local '#{localController.selected.nome}'?" 
+                                  icon="pi pi-exclamation-triangle" />
+                    </p:commandButton>
+                </p:toolbarGroup>
+            </p:toolbar>
+        </p:panel>
+    </h:form>
+
+    <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+        <p:commandButton value="Sim" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check" />
+        <p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no" icon="pi pi-times" />
+    </p:confirmDialog>
+
+    <p:dialog header="Cadastro de Local" 
+              widgetVar="dialogLocal" 
+              modal="true" 
+              resizable="false"
+              width="500"
+              height="250">
+        <h:form id="formDialog">
+            <p:panelGrid columns="2" style="width: 100%;" columnClasses="label,value">
+                <p:outputLabel for="nome" value="Nome:" />
+                <p:inputText id="nome" 
+                           value="#{localController.entity.nome}" 
+                           required="true"
+                           requiredMessage="O nome é obrigatório"
+                           style="width: 300px;" />
+            </p:panelGrid>
+            
+            <p:separator />
+            
+            <p:toolbar>
+                <p:toolbarGroup align="right">
+                    <p:commandButton value="Salvar" 
+                                   icon="pi pi-save"
+                                   action="#{localController.salvar}" 
+                                   update=":formLocal:tabelaLocais :formLocal:messages" 
+                                   oncomplete="if (args &amp;&amp; !args.validationFailed) PF('dialogLocal').hide()" />
+                    
+                    <p:commandButton value="Cancelar" 
+                                   icon="pi pi-times"
+                                   onclick="PF('dialogLocal').hide()" 
+                                   type="button" />
+                </p:toolbarGroup>
+            </p:toolbar>
+        </h:form>
+    </p:dialog>
+</ui:define>
+</ui:composition>

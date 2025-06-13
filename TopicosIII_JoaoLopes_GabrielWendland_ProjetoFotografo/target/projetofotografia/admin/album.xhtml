@@ -1,0 +1,108 @@
+<ui:composition template="/WEB-INF/template.xhtml"
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui">
+
+    <ui:define name="title">
+        Cadastro de Álbuns
+    </ui:define>
+
+    <ui:define name="content">
+        <!-- Formulário para o CRUD -->
+        <h:form id="formAlbum">
+
+            <p:messages id="messages" autoUpdate="true" closable="true" />
+
+            <p:panel header="Lista de Álbuns">
+
+                <!-- Botão Novo Álbum -->
+                <p:commandButton value="Novo Álbum"
+                                 icon="pi pi-plus"
+                                 actionListener="#{albumController.novo}"
+                                 oncomplete="PF(\'dialogAlbum\').show()"
+                                 update=":formAlbum:dialogAlbum"
+                                 resetValues="true"
+                                 styleClass="mb-3" />
+
+                <p:dataTable value="#{albumController.list}" var="album" id="tabelaAlbuns"
+                             editable="false" paginator="true" rows="10">
+
+                    <p:column headerText="ID">
+                        <h:outputText value="#{album.id}" />
+                    </p:column>
+
+                    <p:column headerText="Título">
+                        <h:outputText value="#{album.titulo}" />
+                    </p:column>
+
+                    <p:column headerText="Descrição">
+                        <h:outputText value="#{album.descricao}" />
+                    </p:column>
+
+                    <p:column headerText="Data de Criação">
+                        <h:outputText value="#{album.dataCriacao}">
+                            <f:convertDateTime pattern="dd/MM/yyyy" />
+                        </h:outputText>
+                    </p:column>
+
+                    <p:column headerText="Fotógrafo">
+                        <h:outputText value="#{album.fotografo.nome}" />
+                    </p:column>
+
+                    <p:column headerText="Ações">
+                        <p:commandButton value="Editar"
+                                         icon="pi pi-pencil"
+                                         actionListener="#{albumController.editar(album)}"
+                                         oncomplete="PF(\'dialogAlbum\').show()"
+                                         update=":formAlbum:dialogAlbum" />
+                        <p:commandButton value="Excluir"
+                                         icon="pi pi-trash"
+                                         actionListener="#{albumController.excluir}"
+                                         update=":formAlbum:tabelaAlbuns :formAlbum:messages"
+                                         process="@this">
+                            <f:setPropertyActionListener target="#{albumController.entity}" value="#{album}" />
+                        </p:commandButton>
+                    </p:column>
+
+                </p:dataTable>
+            </p:panel>
+
+            <!-- Dialog para cadastro/edição -->
+            <p:dialog id="dialogAlbum" widgetVar="dialogAlbum" header="Novo Álbum"
+                      modal="true" appendTo="formAlbum" width="600" height="400">
+
+                <h:panelGrid columns="2" cellpadding="5">
+
+                    <h:outputLabel value="Título:" for="titulo" />
+                    <p:inputText id="titulo" value="#{albumController.entity.titulo}" required="true"/>
+
+                    <h:outputLabel value="Descrição:" for="descricao" />
+                    <p:inputTextarea id="descricao" value="#{albumController.entity.descricao}" required="true"/>
+
+                    <h:outputLabel value="Fotógrafo:" for="fotografo" />
+                    <p:selectOneMenu id="fotografo" value="#{albumController.fotografoId}">
+                        <f:selectItems value="#{albumController.fotografos}" var="f"
+                                       itemValue="#{f.id}" itemLabel="#{f.nome}" />
+                    </p:selectOneMenu>
+
+                </h:panelGrid>
+
+                <f:facet name="footer">
+                    <p:commandButton value="Salvar"
+                                     icon="pi pi-save"
+                                     action="#{albumController.salvar}"
+                                     process="@form"
+                                     update=":formAlbum:messages :formAlbum:tabelaAlbuns"
+                                     oncomplete="PF(\'dialogAlbum\').hide()" />
+                </f:facet>
+
+            </p:dialog>
+
+        </h:form>
+    </ui:define>
+
+</ui:composition>
+
+

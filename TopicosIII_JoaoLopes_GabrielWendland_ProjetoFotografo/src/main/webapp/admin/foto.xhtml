@@ -1,0 +1,264 @@
+<ui:composition template="/WEB-INF/template.xhtml"
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui">
+
+    <ui:define name="title">
+        Gerenciamento de Fotos
+    </ui:define>
+
+    <ui:define name="content">
+        <!-- Formulário principal -->
+        <h:form id="formFoto" enctype="multipart/form-data">
+
+            <!-- Mensagens globais -->
+            <p:messages id="messages" autoUpdate="true" closable="true" 
+                       showIcon="true" showDetail="true" />
+
+            <!-- Painel principal -->
+            <p:panel header="Lista de Fotos" styleClass="mb-4">
+
+                <!-- Botão Nueva Foto -->
+                <div class="mb-3">
+                    <p:commandButton value="Nova Foto"
+                                     icon="pi pi-plus"
+                                     styleClass="ui-button-success"
+                                     action="#{fotoController.novo}"
+                                     oncomplete="PF('dialogFoto').show()"
+                                     update="dialogFoto"
+                                     process="@this" />
+                </div>
+
+                <!-- Tabela de fotos -->
+                <p:dataTable value="#{fotoController.list}" var="foto" id="tabelaFotos"
+                             paginator="true" rows="10" 
+                             paginatorPosition="both"
+                             emptyMessage="Nenhuma foto encontrada"
+                             styleClass="mb-4"
+                             responsive="true">
+
+                    <p:column headerText="ID" sortBy="#{foto.id}" style="width: 80px;">
+                        <h:outputText value="#{foto.id}" />
+                    </p:column>
+
+                    <p:column headerText="Título" sortBy="#{foto.titulo}">
+                        <h:outputText value="#{foto.titulo}" />
+                    </p:column>
+
+                    <p:column headerText="Descrição" style="max-width: 200px;">
+                        <h:outputText value="#{foto.descricao}" 
+                                     title="#{foto.descricao}"
+                                     style="display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" />
+                    </p:column>
+
+                    <p:column headerText="Arquivo">
+                        <h:outputText value="#{foto.arquivo}" />
+                    </p:column>
+
+                    <p:column headerText="Gênero">
+                        <h:outputText value="#{foto.genero != null ? foto.genero.nome : 'N/A'}" />
+                    </p:column>
+
+                    <p:column headerText="Local">
+                        <h:outputText value="#{foto.local != null ? foto.local.nome : 'N/A'}" />
+                    </p:column>
+
+                    <p:column headerText="Fotógrafo">
+                        <h:outputText value="#{foto.fotografo != null ? foto.fotografo.nome : 'N/A'}" />
+                    </p:column>
+
+                    <p:column headerText="Ações" style="width: 150px;">
+                        <p:commandButton value="Editar"
+                                         title="Editar"
+                                         icon="pi pi-pencil"
+                                         styleClass="ui-button-warning ui-button-sm mr-2"
+                                         action="#{fotoController.editar(foto)}"
+                                         oncomplete="PF('dialogFoto').show()"
+                                         update="dialogFoto"
+                                         process="@this" />
+                        
+                        <p:commandButton value="Excluir"
+                                         title="Excluir"
+                                         icon="pi pi-trash"
+                                         styleClass="ui-button-danger ui-button-sm"
+                                         onclick="PF('confirmDialog').show()"
+                                         process="@this">
+                            <f:setPropertyActionListener target="#{fotoController.selected}" value="#{foto}" />
+                        </p:commandButton>
+                    </p:column>
+
+                </p:dataTable>
+            </p:panel>
+
+        </h:form>
+
+        <!-- Dialog para cadastro/edição -->
+        <p:dialog id="dialogFoto" widgetVar="dialogFoto" 
+                  header="#{fotoController.entity.id == null ? 'Nova Foto' : 'Editar Foto'}"
+                  modal="true" width="700" height="600"
+                  responsive="true" closable="true" 
+                  closeOnEscape="true">
+
+            <h:form id="formDialog" enctype="multipart/form-data">
+                
+                <p:panel styleClass="mb-3">
+                    <div class="p-fluid">
+                        
+                        <div class="p-field mb-3">
+                            <p:outputLabel for="titulo" value="Título *" />
+                            <p:inputText id="titulo" 
+                                        value="#{fotoController.entity.titulo}" 
+                                        required="true"
+                                        requiredMessage="Título é obrigatório"
+                                        maxlength="100"
+                                        placeholder="Digite o título da foto" />
+                        </div>
+
+                        <div class="p-field mb-3">
+                            <p:outputLabel for="descricao" value="Descrição *" />
+                            <p:inputTextarea id="descricao" 
+                                           value="#{fotoController.entity.descricao}" 
+                                           required="true"
+                                           requiredMessage="Descrição é obrigatória"
+                                           rows="3"
+                                           maxlength="500"
+                                           placeholder="Descreva a foto..." />
+                        </div>
+
+                        <div class="p-field mb-3">
+                            <p:outputLabel for="arquivo" value="Arquivo *" />
+                            <p:fileUpload id="arquivo" 
+                                         mode="simple"
+                                         auto="false"
+                                         allowTypes="/(\.|\/)(gif|jpe?g|png|bmp)$/i"
+                                         fileUploadListener="#{fotoController.handleFileUpload}"
+                                         update="messages" />
+                            <small class="text-muted">Formatos aceitos: JPG, PNG, GIF, BMP</small>
+                        </div>
+
+                        <div class="p-field mb-3">
+                            <p:outputLabel for="genero" value="Gênero" />
+                            <p:selectOneMenu id="genero" 
+                                           value="#{fotoController.generoId}"
+                                           style="width: 100%">
+                                <f:selectItem itemLabel="Selecione um gênero..." itemValue="" />
+                                <f:selectItems value="#{fotoController.generos}" 
+                                             var="g"
+                                             itemValue="#{g.id}" 
+                                             itemLabel="#{g.nome}" />
+                            </p:selectOneMenu>
+                        </div>
+
+                        <div class="p-field mb-3">
+                            <p:outputLabel for="local" value="Local" />
+                            <p:selectOneMenu id="local" 
+                                           value="#{fotoController.localId}"
+                                           style="width: 100%">
+                                <f:selectItem itemLabel="Selecione um local..." itemValue="" />
+                                <f:selectItems value="#{fotoController.locais}" 
+                                             var="l"
+                                             itemValue="#{l.id}" 
+                                             itemLabel="#{l.nome}" />
+                            </p:selectOneMenu>
+                        </div>
+
+                        <div class="p-field mb-3">
+                            <p:outputLabel for="fotografo" value="Fotógrafo" />
+                            <p:selectOneMenu id="fotografo" 
+                                           value="#{fotoController.fotografoId}"
+                                           style="width: 100%">
+                                <f:selectItem itemLabel="Selecione um fotógrafo..." itemValue="" />
+                                <f:selectItems value="#{fotoController.fotografos}" 
+                                             var="f"
+                                             itemValue="#{f.id}" 
+                                             itemLabel="#{f.nome}" />
+                            </p:selectOneMenu>
+                        </div>
+
+                    </div>
+                </p:panel>
+
+                <div class="text-center">
+                    <p:commandButton value="Salvar"
+                                     icon="pi pi-save"
+                                     styleClass="ui-button-success mr-2"
+                                     action="#{fotoController.salvar}"
+                                     process="@form"
+                                     update=":formFoto:messages :formFoto:tabelaFotos"
+                                     oncomplete="if (args &amp;&amp; !args.validationFailed) PF('dialogFoto').hide()" />
+                    
+                    <p:commandButton value="Cancelar"
+                                     icon="pi pi-times"
+                                     styleClass="ui-button-secondary"
+                                     action="#{fotoController.cancelar}"
+                                     onclick="PF('dialogFoto').hide()"
+                                     process="@this"
+                                     immediate="true" />
+                </div>
+
+            </h:form>
+
+        </p:dialog>
+
+        <!-- Dialog de confirmação para exclusão -->
+        <p:confirmDialog id="confirmDialog" 
+                         widgetVar="confirmDialog"
+                         header="Confirmar Exclusão" 
+                         message="Tem certeza que deseja excluir esta foto?"
+                         showEffect="fade" 
+                         hideEffect="fade">
+            
+            <h:form>
+                <p:commandButton value="Sim, Excluir"
+                                 styleClass="ui-button-danger"
+                                 action="#{fotoController.excluir}"
+                                 update=":formFoto:tabelaFotos :formFoto:messages"
+                                 onclick="PF('confirmDialog').hide()"
+                                 process="@this" />
+                
+                <p:commandButton value="Cancelar"
+                                 styleClass="ui-button-secondary"
+                                 onclick="PF('confirmDialog').hide()"
+                                 process="@this" />
+            </h:form>
+            
+        </p:confirmDialog>
+
+        <style>
+            .p-field {
+                margin-bottom: 1rem;
+            }
+            
+            .p-fluid .p-field label {
+                font-weight: bold;
+                margin-bottom: 0.5rem;
+                display: block;
+            }
+            
+            .text-muted {
+                color: #6c757d;
+                font-size: 0.875rem;
+            }
+            
+            .mr-2 {
+                margin-right: 0.5rem;
+            }
+            
+            .mb-3 {
+                margin-bottom: 1rem;
+            }
+            
+            .mb-4 {
+                margin-bottom: 1.5rem;
+            }
+            
+            .text-center {
+                text-align: center;
+            }
+        </style>
+
+    </ui:define>
+
+</ui:composition>

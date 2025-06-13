@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title><ui:insert name="title">Sistema de Gerenciamento de Fotos</ui:insert></title>
+
+    <!-- CSS do tema -->
+    <h:outputStylesheet library="manhattan-layout" name="css/theme.css"/>
+
+    <!-- Outros CSS e JS -->
+    <ui:insert name="head" />
+</h:head>
+
+<h:body>
+
+    <!-- Wrapper geral -->
+    <div id="wrapper">
+
+        <!-- Sidebar lateral -->
+        <aside id="sidebar">
+            <ui:include src="sidebar.xhtml"/>
+        </aside>
+
+        <!-- Conteúdo principal -->
+        <div id="main-content">
+
+            <!-- Topbar -->
+            <header id="topbar">
+                <h:outputText value="Sistema de Gerenciamento de Fotos" />
+            </header>
+
+            <!-- Conteúdo da página -->
+            <main id="content-area">
+                <ui:insert name="content"/>
+            </main>
+
+            <!-- Rodapé -->
+            <footer id="footer">
+                <ui:insert name="footer" />
+            </footer>
+
+        </div>
+
+    </div>
+
+</h:body>
+
+</html>

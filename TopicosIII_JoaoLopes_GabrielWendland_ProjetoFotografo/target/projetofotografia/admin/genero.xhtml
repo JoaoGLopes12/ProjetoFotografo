@@ -1,0 +1,105 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui"
+    template="/WEB-INF/template.xhtml">
+
+<ui:define name="content">
+    <h:form id="formGenero">
+        <p:messages id="messages" showDetail="true" autoUpdate="true" closable="true" />
+        
+        <p:panel header="Gerenciar Gêneros">
+            <p:dataTable value="#{generoController.generos}" var="g" 
+                         selection="#{generoController.selected}" 
+                         selectionMode="single" 
+                         rowKey="#{g.id}"
+                         id="tabelaGeneros">
+                <f:facet name="header">
+                    Lista de Gêneros
+                </f:facet>
+                
+                <p:column headerText="ID" width="80">
+                    <h:outputText value="#{g.id}" />
+                </p:column>
+                
+                <p:column headerText="Descrição">
+                    <h:outputText value="#{g.descricao}" />
+                </p:column>
+                
+                <p:ajax event="rowSelect" update="@form:btnEditar @form:btnExcluir" />
+                <p:ajax event="rowUnselect" update="@form:btnEditar @form:btnExcluir" />
+            </p:dataTable>
+
+            <p:toolbar style="margin-top: 10px;">
+                <p:toolbarGroup align="left">
+                    <p:commandButton value="Novo" 
+                                   icon="pi pi-plus"
+                                   actionListener="#{generoController.novo}" 
+                                   update=":formDialog" 
+                                   oncomplete="PF('dialogGenero').show()" />
+                    
+                    <p:commandButton id="btnEditar"
+                                   value="Editar" 
+                                   icon="pi pi-pencil"
+                                   actionListener="#{generoController.prepararEdicao}" 
+                                   update=":formDialog" 
+                                   oncomplete="if (#{not empty generoController.selected}) PF('dialogGenero').show()" 
+                                   disabled="#{empty generoController.selected}" />
+                    
+                    <p:commandButton id="btnExcluir"
+                                   value="Excluir" 
+                                   icon="pi pi-trash"
+                                   actionListener="#{generoController.excluir}" 
+                                   update="@form messages" 
+                                   disabled="#{empty generoController.selected}">
+                        <p:confirm header="Confirmação" 
+                                  message="Tem certeza que deseja excluir o gênero '#{generoController.selected.descricao}'?" 
+                                  icon="pi pi-exclamation-triangle" />
+                    </p:commandButton>
+                </p:toolbarGroup>
+            </p:toolbar>
+        </p:panel>
+    </h:form>
+
+    <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+        <p:commandButton value="Sim" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check" />
+        <p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no" icon="pi pi-times" />
+    </p:confirmDialog>
+
+    <p:dialog header="Cadastro de Gênero" 
+              widgetVar="dialogGenero" 
+              modal="true" 
+              resizable="false"
+              width="500"
+              height="250">
+        <h:form id="formDialog">
+            <p:panelGrid columns="2" style="width: 100%;" columnClasses="label,value">
+                <p:outputLabel for="descricao" value="Descrição:" />
+                <p:inputText id="descricao" 
+                           value="#{generoController.entity.descricao}" 
+                           required="true"
+                           requiredMessage="A descrição é obrigatória"
+                           style="width: 300px;" />
+            </p:panelGrid>
+            
+            <p:separator />
+            
+            <p:toolbar>
+                <p:toolbarGroup align="right">
+                    <p:commandButton value="Salvar" 
+                                   icon="pi pi-save"
+                                   action="#{generoController.salvar}" 
+                                   update=":formGenero:tabelaGeneros :formGenero:messages" 
+                                   oncomplete="if (args &amp;&amp; !args.validationFailed) PF('dialogGenero').hide()" />
+                    
+                    <p:commandButton value="Cancelar" 
+                                   icon="pi pi-times"
+                                   onclick="PF('dialogGenero').hide()" 
+                                   type="button" />
+                </p:toolbarGroup>
+            </p:toolbar>
+        </h:form>
+    </p:dialog>
+</ui:define>
+</ui:composition>

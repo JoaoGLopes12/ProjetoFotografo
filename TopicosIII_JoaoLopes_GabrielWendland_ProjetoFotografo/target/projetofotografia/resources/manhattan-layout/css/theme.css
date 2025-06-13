@@ -1,0 +1,112 @@
+/* Geral */
+body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background-color: #f4f7fa;
+    margin: 0;
+    padding: 0;
+}
+
+/* Wrapper */
+#wrapper {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* Sidebar */
+#sidebar {
+    width: 250px;
+    background-color: #2C3E50;
+    color: #ecf0f1;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    padding: 10px 0;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+}
+
+#sidebar .ui-menu {
+    width: 100%;
+}
+
+#sidebar .ui-menuitem {
+    padding: 10px 15px;
+    display: flex;
+    align-items: center;
+    color: #ecf0f1;
+    text-decoration: none;
+    transition: background-color 0.3s;
+}
+
+#sidebar .ui-menuitem:hover {
+    background-color: #16a085;
+    cursor: pointer;
+}
+
+/* Main content */
+#main-content {
+    margin-left: 250px;
+    display: flex;
+    flex-direction: column;
+    width: calc(100% - 250px);
+    min-height: 100vh;
+}
+
+/* Topbar */
+#topbar {
+    height: 60px;
+    background-color: #34495E;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    font-size: 18px;
+    font-weight: bold;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Content Area */
+#content-area {
+    flex: 1;
+    padding: 20px;
+    background-color: #f4f7fa;
+}
+
+/* Footer */
+#footer {
+    background-color: #34495E;
+    color: #ffffff;
+    padding: 10px;
+    text-align: center;
+    font-size: 14px;
+}
+
+/* Tabela */
+.ui-datatable {
+    margin-top: 20px;
+}
+
+.ui-datatable .ui-datatable-header {
+    background-color: #2C3E50;
+    color: #ffffff;
+    padding: 10px;
+}
+
+.ui-datatable .ui-datatable-data {
+    font-size: 14px;
+}
+
+/* Botões */
+button, .ui-button {
+    background-color: #3498db;
+    color: #fff;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover, .ui-button:hover {
+    background-color: #2980b9;
+}

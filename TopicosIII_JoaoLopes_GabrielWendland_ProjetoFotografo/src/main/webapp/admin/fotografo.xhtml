@@ -1,0 +1,117 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui"
+    template="/WEB-INF/template.xhtml">
+
+<ui:define name="content">
+    <!-- Mensagens de feedback -->
+    <p:growl id="messages" showDetail="false" life="3000" />
+    
+    <h:form id="formFotografo">
+        <p:panel header="Gerenciar Fotógrafos">
+            <p:dataTable value="#{fotografoController.list}" var="f" 
+                         selection="#{fotografoController.selected}" 
+                         selectionMode="single" rowKey="#{f.id}"
+                         paginator="true" rows="10" 
+                         paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         rowsPerPageTemplate="5,10,15">
+                <p:column headerText="ID" sortBy="#{f.id}">
+                    #{f.id}
+                </p:column>
+                <p:column headerText="Nome" sortBy="#{f.nome}" filterBy="#{f.nome}" filterMatchMode="contains">
+                    #{f.nome}
+                </p:column>
+                <p:column headerText="Email" sortBy="#{f.email}" filterBy="#{f.email}" filterMatchMode="contains">
+                    #{f.email}
+                </p:column>
+            </p:dataTable>
+
+            <div style="margin-top: 10px;">
+                <p:commandButton value="Novo" 
+                                actionListener="#{fotografoController.novo}" 
+                                update=":formDialog" 
+                                oncomplete="PF('dialogFotografo').show()"
+                                icon="pi pi-plus" />
+                                
+                <p:commandButton value="Editar" 
+                                actionListener="#{fotografoController.editar}" 
+                                update=":formDialog" 
+                                oncomplete="PF('dialogFotografo').show()" 
+                                disabled="#{empty fotografoController.selected}"
+                                icon="pi pi-pencil"
+                                style="margin-left: 5px;" />
+                                
+                <p:commandButton value="Excluir" 
+                                action="#{fotografoController.excluir}" 
+                                update="@form :messages" 
+                                disabled="#{empty fotografoController.selected}"
+                                icon="pi pi-trash"
+                                style="margin-left: 5px;">
+                    <p:confirm header="Confirmação" message="Deseja realmente excluir este fotógrafo?" icon="pi pi-exclamation-triangle" />
+                </p:commandButton>
+            </div>
+        </p:panel>
+    </h:form>
+
+    <!-- Dialog de confirmação para exclusão -->
+    <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+        <p:commandButton value="Sim" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check" />
+        <p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no" icon="pi pi-times" />
+    </p:confirmDialog>
+
+    <!-- Dialog para cadastro/edição -->
+    <p:dialog header="#{empty fotografoController.entity.id ? 'Novo' : 'Editar'} Fotógrafo" 
+              widgetVar="dialogFotografo" modal="true" resizable="false" width="400">
+        <h:form id="formDialog">
+            <p:panelGrid columns="2" style="width: 100%;" columnClasses="label,value">
+                <p:outputLabel for="nome" value="Nome:" />
+                <p:inputText id="nome" value="#{fotografoController.entity.nome}" 
+                            required="true" requiredMessage="Nome é obrigatório"
+                            style="width: 100%;" />
+
+                <p:outputLabel for="email" value="Email:" />
+                <p:inputText id="email" value="#{fotografoController.entity.email}" 
+                            required="true" requiredMessage="Email é obrigatório"
+                            validatorMessage="Email inválido"
+                            style="width: 100%;">
+                    <f:validateRegex pattern="^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$" />
+                </p:inputText>
+
+                <p:outputLabel for="senha" value="Senha:" />
+                <p:password id="senha" value="#{fotografoController.entity.senha}" 
+                           required="true" requiredMessage="Senha é obrigatória"
+                           feedback="true" weakLabel="Fraca" goodLabel="Boa" strongLabel="Forte"
+                           style="width: 100%;" />
+            </p:panelGrid>
+            
+            <div style="text-align: center; margin-top: 20px;">
+                <p:commandButton value="Salvar" 
+                                action="#{fotografoController.salvar}" 
+                                update=":formFotografo :messages" 
+                                oncomplete="handleDialogSubmit(args)"
+                                icon="pi pi-save" />
+                                
+                <p:commandButton value="Cancelar" 
+                                onclick="PF('dialogFotografo').hide()" 
+                                type="button"
+                                icon="pi pi-times"
+                                style="margin-left: 10px;" />
+            </div>
+        </h:form>
+    </p:dialog>
+
+    <script type="text/javascript">
+        function handleDialogSubmit(args) {
+            if (args.validationFailed) {
+                // Se houve erro de validação, mantém o dialog aberto
+                return;
+            } else {
+                // Se salvou com sucesso, fecha o dialog
+                PF('dialogFotografo').hide();
+            }
+        }
+    </script>
+</ui:define>
+</ui:composition>
