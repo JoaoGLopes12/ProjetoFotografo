@@ -31,6 +31,9 @@ public class AlbumEntity implements Serializable {
     @Column(name = "alb_data_criacao")
     private LocalDate dataCriacao;
 
+    @Column(name = "alb_imagem_capa", length = 255)
+    private String imagemCapa;
+
     @ManyToOne
     @JoinColumn(name = "fot_id", nullable = false)
     private FotografoEntity fotografo;
@@ -71,6 +74,14 @@ public class AlbumEntity implements Serializable {
         this.dataCriacao = dataCriacao;
     }
 
+    public String getImagemCapa() {
+        return imagemCapa;
+    }
+
+    public void setImagemCapa(String imagemCapa) {
+        this.imagemCapa = imagemCapa;
+    }
+
     public FotografoEntity getFotografo() {
         return fotografo;
     }
@@ -102,7 +113,4 @@ public class AlbumEntity implements Serializable {
     public String toString() {
         return "br.upf.projetofotografia.entity.AlbumEntity[ id=" + id + " ]";
     }
-
 }
-
-

@@ -1,4 +1,3 @@
-
 package br.upf.projetofotografia.facade;
 
 import br.upf.projetofotografia.entity.GeneroEntity;
@@ -38,8 +37,8 @@ public class GeneroFacade {
         return em.createQuery("SELECT g FROM GeneroEntity g", GeneroEntity.class).getResultList();
     }
 
-    // Method to find a genre by ID
-    public GeneroEntity find(Integer id) {
+    // Method to find a genre by ID - CORRIGIDO para aceitar Long
+    public GeneroEntity find(Long id) {
         return em.find(GeneroEntity.class, id);
     }
 }

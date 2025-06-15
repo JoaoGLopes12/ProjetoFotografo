@@ -47,7 +47,8 @@ public class FotoController implements Serializable {
 
     private UploadedFile uploadedFile;
 
-    private Integer generoId;
+    // Mantido como Long para compatibilidade com GeneroEntity.getId()
+    private Long generoId;
     private Integer localId;
     private Integer fotografoId;
 
@@ -55,157 +56,10 @@ public class FotoController implements Serializable {
     public void init() {
         try {
             entity = new FotoEntity();
-            recarregarListas();
-        } catch (Exception e) {
-            System.err.println("Erro ao recarregar listas: " + e.getMessage());
-            list = new ArrayList<>();
-            generos = new ArrayList<>();
-            locais = new ArrayList<>();
-            fotografos = new ArrayList<>();
-        }
-    }
-
-    public void salvar() {
-        System.out.println("SALVAR FOI CHAMADO!");
-
-        try {
-            // Validações básicas
-            if (entity.getTitulo() == null || entity.getTitulo().trim().isEmpty()) {
-                FacesContext.getCurrentInstance().addMessage(null, 
-                    new FacesMessage(FacesMessage.SEVERITY_WARN, "Atenção", "Título é obrigatório!"));
-                return;
-            }
-
-            if (entity.getDescricao() == null || entity.getDescricao().trim().isEmpty()) {
-                FacesContext.getCurrentInstance().addMessage(null, 
-                    new FacesMessage(FacesMessage.SEVERITY_WARN, "Atenção", "Descrição é obrigatória!"));
-                return;
-            }
-
-            // Processamento do arquivo
-            if (uploadedFile != null && uploadedFile.getFileName() != null && !uploadedFile.getFileName().isEmpty()) {
-                entity.setArquivo(uploadedFile.getFileName());
-                System.out.println("Arquivo sendo salvo: " + uploadedFile.getFileName());
-            } else if (entity.getId() == null) {
-                // Apenas obrigatório para novas fotos
-                FacesContext.getCurrentInstance().addMessage(null, 
-                    new FacesMessage(FacesMessage.SEVERITY_WARN, "Atenção", "Arquivo é obrigatório!"));
-                return;
-            }
-
-            // Configuração das entidades relacionadas
-            if (generoId != null) {
-                GeneroEntity genero = generoFacade.find(generoId);
-                entity.setGenero(genero);
-            }
-            if (localId != null) {
-                LocalEntity local = localFacade.find(localId);
-                entity.setLocal(local);
-            }
-            if (fotografoId != null) {
-                FotografoEntity fotografo = fotografoFacade.find(fotografoId);
-                entity.setFotografo(fotografo);
-            }
-
-            // Salvar ou atualizar
-            if (entity.getId() == null) {
-                fotoFacade.create(entity);
-                FacesContext.getCurrentInstance().addMessage(null, 
-                    new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", "Foto cadastrada com sucesso!"));
-                System.out.println("Foto cadastrada com sucesso!");
-            } else {
-                fotoFacade.edit(entity);
-                FacesContext.getCurrentInstance().addMessage(null, 
-                    new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", "Foto atualizada com sucesso!"));
-                System.out.println("Foto atualizada com sucesso!");
-            }
-
-            limparFormulario();
-            recarregarListas();
-
-        } catch (Exception e) {
-            System.err.println("Erro ao salvar: " + e.getMessage());
-            FacesContext.getCurrentInstance().addMessage(null,
-                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erro", "Erro ao salvar: " + e.getMessage()));
-        }
-    }
-
-    public void excluir() {
-        try {
-            if (selected != null) {
-                fotoFacade.remove(selected);
-                recarregarListas();
-                selected = null;
-                FacesContext.getCurrentInstance().addMessage(null, 
-                    new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", "Foto excluída com sucesso!"));
-            } else {
-                FacesContext.getCurrentInstance().addMessage(null, 
-                    new FacesMessage(FacesMessage.SEVERITY_WARN, "Atenção", "Nenhuma foto selecionada para exclusão!"));
-            }
-        } catch (Exception e) {
-            System.err.println("Erro ao excluir: " + e.getMessage());
-            FacesContext.getCurrentInstance().addMessage(null,
-                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erro", "Erro ao excluir: " + e.getMessage()));
-        }
-    }
-
-    public void novo() {
-        limparFormulario();
-        System.out.println("Novo formulário inicializado");
-    }
-
-    public void editar(FotoEntity foto) {
-        try {
-            if (foto != null) {
-                this.entity = new FotoEntity();
-                this.entity.setId(foto.getId());
-                this.entity.setTitulo(foto.getTitulo());
-                this.entity.setDescricao(foto.getDescricao());
-                this.entity.setArquivo(foto.getArquivo());
-                this.entity.setGenero(foto.getGenero());
-                this.entity.setLocal(foto.getLocal());
-                this.entity.setFotografo(foto.getFotografo());
-                
-                // Correção dos castings
-                this.generoId = (foto.getGenero() != null) ? foto.getGenero().getId() : null;
-                this.localId = (foto.getLocal() != null) ? foto.getLocal().getId() : null;
-                this.fotografoId = (foto.getFotografo() != null) ? foto.getFotografo().getId() : null;
-                
-                uploadedFile = null;
-                System.out.println("Editando foto ID: " + foto.getId());
-            }
-        } catch (Exception e) {
-            System.err.println("Erro ao preparar edição: " + e.getMessage());
-            FacesContext.getCurrentInstance().addMessage(null,
-                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erro", "Erro ao preparar edição: " + e.getMessage()));
-        }
-    }
-
-    public void handleFileUpload(FileUploadEvent event) {
-        try {
-            this.uploadedFile = event.getFile();
-            System.out.println("UPLOAD RECEBIDO: " + uploadedFile.getFileName());
-            FacesContext.getCurrentInstance().addMessage(null, 
-                new FacesMessage(FacesMessage.SEVERITY_INFO, "Upload", "Arquivo carregado: " + uploadedFile.getFileName()));
-        } catch (Exception e) {
-            System.err.println("Erro no upload: " + e.getMessage());
-            FacesContext.getCurrentInstance().addMessage(null,
-                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erro", "Erro no upload: " + e.getMessage()));
-        }
-    }
-
-    public void cancelar() {
-        limparFormulario();
-        System.out.println("Operação cancelada");
-    }
-
-    private void recarregarListas() {
-        try {
             list = fotoFacade != null ? fotoFacade.findAll() : new ArrayList<>();
             generos = generoFacade != null ? generoFacade.findAll() : new ArrayList<>();
             locais = localFacade != null ? localFacade.findAll() : new ArrayList<>();
             fotografos = fotografoFacade != null ? fotografoFacade.findAll() : new ArrayList<>();
-            System.out.println("Listas recarregadas - Fotos: " + list.size());
         } catch (Exception e) {
             e.printStackTrace();
             list = new ArrayList<>();
@@ -215,13 +69,175 @@ public class FotoController implements Serializable {
         }
     }
 
-    private void limparFormulario() {
+    public String salvar() {
+        System.out.println("SALVAR FOI CHAMADO!");
+        System.out.println("Título: " + entity.getTitulo());
+        System.out.println("Descrição: " + entity.getDescricao());
+        System.out.println("GeneroId: " + generoId);
+        System.out.println("LocalId: " + localId);
+        System.out.println("FotografoId: " + fotografoId);
+
+        try {
+            // Validações básicas
+            if (entity.getTitulo() == null || entity.getTitulo().trim().isEmpty()) {
+                FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erro", "Título é obrigatório"));
+                return null;
+            }
+            
+            if (entity.getDescricao() == null || entity.getDescricao().trim().isEmpty()) {
+                FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erro", "Descrição é obrigatória"));
+                return null;
+            }
+
+            // Tratamento do arquivo
+            if (uploadedFile != null && uploadedFile.getFileName() != null && !uploadedFile.getFileName().isEmpty()) {
+                entity.setArquivo(uploadedFile.getFileName());
+                System.out.println("Arquivo sendo salvo: " + uploadedFile.getFileName());
+            } else {
+                System.out.println("Nenhum arquivo enviado.");
+                if (entity.getId() == null) { // Apenas para novos registros
+                    entity.setArquivo("");
+                }
+            }
+
+            // Buscar e setar as entidades relacionadas
+            if (generoId != null && generoId > 0) {
+                GeneroEntity genero = generoFacade.find(generoId);
+                if (genero != null) {
+                    entity.setGenero(genero);
+                    System.out.println("Gênero encontrado: " + genero.getDescricao());
+                } else {
+                    System.out.println("Gênero não encontrado com ID: " + generoId);
+                }
+            } else {
+                entity.setGenero(null);
+            }
+            
+            if (localId != null && localId > 0) {
+                LocalEntity local = localFacade.find(localId);
+                if (local != null) {
+                    entity.setLocal(local);
+                    System.out.println("Local encontrado: " + local.getNome());
+                } else {
+                    System.out.println("Local não encontrado com ID: " + localId);
+                }
+            } else {
+                entity.setLocal(null);
+            }
+            
+            if (fotografoId != null && fotografoId > 0) {
+                FotografoEntity fotografo = fotografoFacade.find(fotografoId);
+                if (fotografo != null) {
+                    entity.setFotografo(fotografo);
+                    System.out.println("Fotógrafo encontrado: " + fotografo.getNome());
+                } else {
+                    System.out.println("Fotógrafo não encontrado com ID: " + fotografoId);
+                }
+            } else {
+                entity.setFotografo(null);
+            }
+
+            // Salvar a entidade
+            if (entity.getId() == null) {
+                System.out.println("Criando nova foto...");
+                fotoFacade.create(entity);
+                FacesContext.getCurrentInstance().addMessage(null, 
+                    new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", "Foto cadastrada com sucesso!"));
+                System.out.println("Foto cadastrada com sucesso!");
+            } else {
+                System.out.println("Editando foto existente...");
+                fotoFacade.edit(entity);
+                FacesContext.getCurrentInstance().addMessage(null, 
+                    new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", "Foto atualizada com sucesso!"));
+                System.out.println("Foto atualizada com sucesso!");
+            }
+
+            // Limpar formulário e atualizar lista
+            novo();
+            list = fotoFacade.findAll();
+            selected = null; // Limpar seleção
+            
+            return null; // Retorna null para permanecer na mesma página
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("ERRO NO SALVAMENTO: " + e.getMessage());
+            FacesContext.getCurrentInstance().addMessage(null,
+                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erro ao salvar", 
+                "Erro: " + e.getMessage()));
+            return null;
+        }
+    }
+
+    public void excluir() {
+        try {
+            if (selected != null) {
+                System.out.println("Excluindo foto com ID: " + selected.getId());
+                fotoFacade.remove(selected);
+                list = fotoFacade.findAll();
+                selected = null;
+                FacesContext.getCurrentInstance().addMessage(null, 
+                    new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", "Foto excluída com sucesso."));
+                System.out.println("Foto excluída com sucesso!");
+            } else {
+                System.out.println("Nenhuma foto selecionada para exclusão");
+                FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_WARN, "Aviso", "Nenhuma foto selecionada para exclusão."));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("ERRO NA EXCLUSÃO: " + e.getMessage());
+            FacesContext.getCurrentInstance().addMessage(null,
+                new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erro ao excluir", e.getMessage()));
+        }
+    }
+
+    public void novo() {
+        System.out.println("Novo() chamado");
         entity = new FotoEntity();
         generoId = null;
         localId = null;
         fotografoId = null;
         uploadedFile = null;
-        selected = null;
+    }
+
+    public void prepararEdicao() {
+        if (selected != null) {
+            System.out.println("Preparando edição da foto com ID: " + selected.getId());
+            // Cria uma nova instância para evitar problemas de referência
+            this.entity = new FotoEntity();
+            this.entity.setId(selected.getId());
+            this.entity.setTitulo(selected.getTitulo());
+            this.entity.setDescricao(selected.getDescricao());
+            this.entity.setArquivo(selected.getArquivo());
+            this.entity.setGenero(selected.getGenero());
+            this.entity.setLocal(selected.getLocal());
+            this.entity.setFotografo(selected.getFotografo());
+            
+            // Definir os IDs para os selects
+            this.generoId = (selected.getGenero() != null) ? selected.getGenero().getId() : null;
+            this.localId = (selected.getLocal() != null) ? selected.getLocal().getId() : null;
+            this.fotografoId = (selected.getFotografo() != null) ? selected.getFotografo().getId() : null;
+            uploadedFile = null;
+            
+            System.out.println("Dados carregados para edição:");
+            System.out.println("Título: " + entity.getTitulo());
+            System.out.println("GeneroId: " + generoId);
+            System.out.println("LocalId: " + localId);
+            System.out.println("FotografoId: " + fotografoId);
+        } else {
+            System.out.println("Nenhuma foto selecionada para edição");
+        }
+    }
+
+    public void handleFileUpload(FileUploadEvent event) {
+        this.uploadedFile = event.getFile();
+        System.out.println("UPLOAD RECEBIDO: " + uploadedFile.getFileName());
+        FacesContext.getCurrentInstance().addMessage(null, 
+            new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", 
+            "Arquivo '" + uploadedFile.getFileName() + "' foi carregado."));
     }
 
     // Getters e Setters
@@ -265,11 +281,11 @@ public class FotoController implements Serializable {
         this.uploadedFile = uploadedFile;
     }
 
-    public Integer getGeneroId() {
+    public Long getGeneroId() {
         return generoId;
     }
 
-    public void setGeneroId(Integer generoId) {
+    public void setGeneroId(Long generoId) {
         this.generoId = generoId;
     }
 
