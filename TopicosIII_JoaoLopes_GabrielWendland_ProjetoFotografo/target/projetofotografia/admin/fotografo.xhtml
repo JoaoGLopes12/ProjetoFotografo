@@ -6,112 +6,129 @@
     template="/WEB-INF/template.xhtml">
 
 <ui:define name="content">
-    <!-- Mensagens de feedback -->
-    <p:growl id="messages" showDetail="false" life="3000" />
-    
     <h:form id="formFotografo">
+        <p:messages id="messages" showDetail="true" autoUpdate="true" closable="true" />
+        
         <p:panel header="Gerenciar Fotógrafos">
             <p:dataTable value="#{fotografoController.list}" var="f" 
                          selection="#{fotografoController.selected}" 
-                         selectionMode="single" rowKey="#{f.id}"
+                         selectionMode="single" 
+                         rowKey="#{f.id}"
+                         id="tabelaFotografos"
                          paginator="true" rows="10" 
                          paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                          rowsPerPageTemplate="5,10,15">
-                <p:column headerText="ID" sortBy="#{f.id}">
-                    #{f.id}
+                
+                <f:facet name="header">
+                    Lista de Fotógrafos
+                </f:facet>
+                
+                <p:column headerText="ID" sortBy="#{f.id}" width="80">
+                    <h:outputText value="#{f.id}" />
                 </p:column>
+                
                 <p:column headerText="Nome" sortBy="#{f.nome}" filterBy="#{f.nome}" filterMatchMode="contains">
-                    #{f.nome}
+                    <h:outputText value="#{f.nome}" />
                 </p:column>
+                
                 <p:column headerText="Email" sortBy="#{f.email}" filterBy="#{f.email}" filterMatchMode="contains">
-                    #{f.email}
+                    <h:outputText value="#{f.email}" />
                 </p:column>
+                
+                <p:ajax event="rowSelect" update="@form:btnEditar @form:btnExcluir" />
+                <p:ajax event="rowUnselect" update="@form:btnEditar @form:btnExcluir" />
             </p:dataTable>
 
-            <div style="margin-top: 10px;">
-                <p:commandButton value="Novo" 
-                                actionListener="#{fotografoController.novo}" 
-                                update=":formDialog" 
-                                oncomplete="PF('dialogFotografo').show()"
-                                icon="pi pi-plus" />
-                                
-                <p:commandButton value="Editar" 
-                                actionListener="#{fotografoController.editar}" 
-                                update=":formDialog" 
-                                oncomplete="PF('dialogFotografo').show()" 
-                                disabled="#{empty fotografoController.selected}"
-                                icon="pi pi-pencil"
-                                style="margin-left: 5px;" />
-                                
-                <p:commandButton value="Excluir" 
-                                action="#{fotografoController.excluir}" 
-                                update="@form :messages" 
-                                disabled="#{empty fotografoController.selected}"
-                                icon="pi pi-trash"
-                                style="margin-left: 5px;">
-                    <p:confirm header="Confirmação" message="Deseja realmente excluir este fotógrafo?" icon="pi pi-exclamation-triangle" />
-                </p:commandButton>
-            </div>
+            <p:toolbar style="margin-top: 10px;">
+                <p:toolbarGroup align="left">
+                    <p:commandButton value="Novo" 
+                                   icon="pi pi-plus"
+                                   actionListener="#{fotografoController.novo}" 
+                                   update=":formDialog" 
+                                   oncomplete="PF('dialogFotografo').show()" />
+                    
+                    <p:commandButton id="btnEditar"
+                                   value="Editar" 
+                                   icon="pi pi-pencil"
+                                   actionListener="#{fotografoController.editar}" 
+                                   update=":formDialog" 
+                                   oncomplete="if (#{not empty fotografoController.selected}) PF('dialogFotografo').show()" 
+                                   disabled="#{empty fotografoController.selected}" />
+                    
+                    <p:commandButton id="btnExcluir"
+                                   value="Excluir" 
+                                   icon="pi pi-trash"
+                                   action="#{fotografoController.excluir}" 
+                                   update="@form messages" 
+                                   disabled="#{empty fotografoController.selected}">
+                        <p:confirm header="Confirmação" 
+                                  message="Tem certeza que deseja excluir o fotógrafo '#{fotografoController.selected.nome}'?" 
+                                  icon="pi pi-exclamation-triangle" />
+                    </p:commandButton>
+                </p:toolbarGroup>
+            </p:toolbar>
         </p:panel>
     </h:form>
 
-    <!-- Dialog de confirmação para exclusão -->
     <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
         <p:commandButton value="Sim" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check" />
         <p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no" icon="pi pi-times" />
     </p:confirmDialog>
 
-    <!-- Dialog para cadastro/edição -->
     <p:dialog header="#{empty fotografoController.entity.id ? 'Novo' : 'Editar'} Fotógrafo" 
-              widgetVar="dialogFotografo" modal="true" resizable="false" width="400">
+              widgetVar="dialogFotografo" 
+              modal="true" 
+              resizable="false"
+              width="500"
+              height="400">
         <h:form id="formDialog">
             <p:panelGrid columns="2" style="width: 100%;" columnClasses="label,value">
                 <p:outputLabel for="nome" value="Nome:" />
-                <p:inputText id="nome" value="#{fotografoController.entity.nome}" 
-                            required="true" requiredMessage="Nome é obrigatório"
-                            style="width: 100%;" />
+                <p:inputText id="nome" 
+                           value="#{fotografoController.entity.nome}" 
+                           required="true" 
+                           requiredMessage="Nome é obrigatório"
+                           style="width: 300px;" />
 
                 <p:outputLabel for="email" value="Email:" />
-                <p:inputText id="email" value="#{fotografoController.entity.email}" 
-                            required="true" requiredMessage="Email é obrigatório"
-                            validatorMessage="Email inválido"
-                            style="width: 100%;">
+                <p:inputText id="email" 
+                           value="#{fotografoController.entity.email}" 
+                           required="true" 
+                           requiredMessage="Email é obrigatório"
+                           validatorMessage="Email inválido"
+                           style="width: 300px;">
                     <f:validateRegex pattern="^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$" />
                 </p:inputText>
 
                 <p:outputLabel for="senha" value="Senha:" />
-                <p:password id="senha" value="#{fotografoController.entity.senha}" 
-                           required="true" requiredMessage="Senha é obrigatória"
-                           feedback="true" weakLabel="Fraca" goodLabel="Boa" strongLabel="Forte"
-                           style="width: 100%;" />
+                <p:password id="senha" 
+                          value="#{fotografoController.entity.senha}" 
+                          required="true" 
+                          requiredMessage="Senha é obrigatória"
+                          feedback="true" 
+                          weakLabel="Fraca" 
+                          goodLabel="Boa" 
+                          strongLabel="Forte"
+                          style="width: 300px;" />
             </p:panelGrid>
             
-            <div style="text-align: center; margin-top: 20px;">
-                <p:commandButton value="Salvar" 
-                                action="#{fotografoController.salvar}" 
-                                update=":formFotografo :messages" 
-                                oncomplete="handleDialogSubmit(args)"
-                                icon="pi pi-save" />
-                                
-                <p:commandButton value="Cancelar" 
-                                onclick="PF('dialogFotografo').hide()" 
-                                type="button"
-                                icon="pi pi-times"
-                                style="margin-left: 10px;" />
-            </div>
+            <p:separator />
+            
+            <p:toolbar>
+                <p:toolbarGroup align="right">
+                    <p:commandButton value="Salvar" 
+                                   icon="pi pi-save"
+                                   action="#{fotografoController.salvar}" 
+                                   update=":formFotografo:tabelaFotografos :formFotografo:messages" 
+                                   oncomplete="if (args &amp;&amp; !args.validationFailed) PF('dialogFotografo').hide()" />
+                    
+                    <p:commandButton value="Cancelar" 
+                                   icon="pi pi-times"
+                                   onclick="PF('dialogFotografo').hide()" 
+                                   type="button" />
+                </p:toolbarGroup>
+            </p:toolbar>
         </h:form>
     </p:dialog>
-
-    <script type="text/javascript">
-        function handleDialogSubmit(args) {
-            if (args.validationFailed) {
-                // Se houve erro de validação, mantém o dialog aberto
-                return;
-            } else {
-                // Se salvou com sucesso, fecha o dialog
-                PF('dialogFotografo').hide();
-            }
-        }
-    </script>
 </ui:define>
 </ui:composition>
